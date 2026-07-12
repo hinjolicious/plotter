@@ -9,6 +9,12 @@ A lightweight, feature-rich 2D charting engine written in pure **Red**. This lib
 * **Interactive Modifiers:** Built-in Least-Squares Quadratic Regression (`/fit`) generates trend-lines automatically over raw point series.
 * **Red/Draw Native Integration:** Outputs high-performance raw Draw commands ready to be plugged directly into any UI `box` or `base` face.
 
+## TBA
+
+* 3D Viewing
+* Interactivity
+* etc.
+
 ---
 
 ## Architecture & Requirements
