@@ -136,12 +136,20 @@ PLOTTER: make object! [
 		cfg: plot-config
 		
 		; shortcuts: left, bottom, top, right margins, canvas size x and y
-		_lm: cfg/margin/1  _bm: cfg/margin/2  _tm: cfg/top-margin  _rm: cfg/right-margin
-		_cvx: canvas-size/x  _cvy: canvas-size/y
+		_lm: cfg/margin/1  
+		_bm: cfg/margin/2  
+		_tm: cfg/top-margin  
+		_rm: cfg/right-margin
+		_canv-x: canvas-size/x  
+		_canv-y: canvas-size/y
 		
 		; plot area, width, height
-		plot-area: reduce [as-pair _lm _tm  as-pair (_cvx - _rm) (_cvy - _bm)]
-		_pw: _cvx - _lm - _rm  _ph: _cvy - _tm - _bm
+		plot-area: reduce [
+			as-pair _lm _tm  
+			as-pair (_canv-x - _rm) (_canv-y - _bm)
+		]
+		_pw: _canv-x - _lm - _rm ; plot width
+		_ph: _canv-y - _tm - _bm ; plot height
 		
 		; x series, y series, extracted from data
 		xs: extract data/1/2 2 
@@ -251,20 +259,29 @@ PLOTTER: make object! [
 		
 		; draw x label
 		if x-label? [
-			_ts: cfg/label-size _tw: (length? xl) * _ts * 0.65 _ypos: _ypos + 3 + _ts
+			_ts: cfg/label-size ; text size
+			_tw: (length? xl) * _ts * 0.65 ; text width
+			_ypos: _ypos + 3 + _ts ; y position
 			append blk compose [
 				font (make font! [size: _ts style: 'normal])
-				text (as-pair _lm + (_pw / 2) - (_tw / 2) _ypos) (xl)
+				text (as-pair 
+					_lm + (_pw / 2) - (_tw / 2) 
+					_ypos
+				) (xl)
 			]
 		]   
 		
 		; draw y label
 		if y-label? [
-			_ts: cfg/label-size _tw: (length? yl) * _ts * 0.65
+			_ts: cfg/label-size ; text size
+			_tw: (length? rejoin [yl _mul]) * _ts * 0.65 ; text width 
 			append blk compose/deep [
 				font (make font! [size: cfg/font-size style: 'normal])
 				push [
-					translate (as-pair _xpos - 30 _tm + (_ph / 2) + (_tw / 2))
+					translate (as-pair 
+						_xpos - 30
+						_tm + (_ph / 2) + (_tw / 2) ; center vertically
+					)
 					rotate -90 text 0x0 (rejoin [yl _mul])
 				]
 			]
