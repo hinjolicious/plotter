@@ -218,15 +218,16 @@ PLOTTER: make object! [
 			]
 		]
 		
-		_ysw: _ysw * cfg/scale-size * 0.6
+		_ysw: _ysw * cfg/scale-size * 0.65
 		_xpos: _lm - _ysw - 10
 		
 		; draw the scales on each ticks
 		foreach yt y-ticks [
 			pt: scale-point xr/1 yt xr yr plot-area
 			_ts: cfg/scale-size 
-			either yt > 1000 [
+			either yt >= 1000 [
 				_tf: form round/to (yt / 1000) 0.1
+				_xpos: _lm - ((length? _tf) * 0.65) - 10
 				_mul: " (x 1000)"
 			][
 				_tf: form round/to yt 0.1
@@ -250,7 +251,7 @@ PLOTTER: make object! [
 		
 		; draw x label
 		if x-label? [
-			_ts: cfg/label-size _tw: (length? xl) * _ts * 0.5 _ypos: _ypos + 3 + _ts
+			_ts: cfg/label-size _tw: (length? xl) * _ts * 0.65 _ypos: _ypos + 3 + _ts
 			append blk compose [
 				font (make font! [size: _ts style: 'normal])
 				text (as-pair _lm + (_pw / 2) - (_tw / 2) _ypos) (xl)
@@ -259,7 +260,7 @@ PLOTTER: make object! [
 		
 		; draw y label
 		if y-label? [
-			_ts: cfg/label-size _tw: (length? yl) * _ts * 0.6
+			_ts: cfg/label-size _tw: (length? yl) * _ts * 0.65
 			append blk compose/deep [
 				font (make font! [size: cfg/font-size style: 'normal])
 				push [
