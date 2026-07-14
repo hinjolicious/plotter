@@ -33,11 +33,6 @@ nice-bands: function [
 	; 4. Calculate the perfect number of bands
 	bands: to-integer (round/to ((nice-max - nice-min) / step) 1)
 
-	print ["min" smin "max" smax 
-		"span" span "mag" magnitude "norm" normalized 
-		"s-fac" step-factor "step" step
-		"nmin" nice-min "nmax" nice-max "bands" bands]
-
     ; 5. Safety check: If there are too many bands (e.g., > 15), group them by doubling the step
     if bands > 20 [
         step: step * 2

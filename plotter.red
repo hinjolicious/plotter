@@ -81,18 +81,47 @@ PLOTTER: make object! [
 		c: ym - (b * xm) - (a * x2m)
 		reduce [a b c]
 	]
+	
+	normal-fit: function [xa ya][
+		regression xa collect [foreach y ya [
+			keep log-e (y + 1)
+		]]
+	]	
 
 	make-poly: func [a b c /local bd][
 		bd: [a * (x ** 2) + (b * x) + c]
 		bd/1: a bd/5/1: b bd/7: c
 		func [x] bd
 	]
-
+	
+	make-normal: func [a b c /local ctx] [
+		ctx: object [
+			sigma: sqrt (negate (1.0 / (2.0 * a)))
+			mu: b * (sigma ** 2)
+			alpha: exp (c + ((mu ** 2) / (2.0 * (sigma ** 2))))
+		]
+		func [x] bind [
+			alpha * exp (negate ((x - mu) ** 2) / (2.0 * (sigma ** 2)))
+		] ctx
+	]	
+	
 	fitting: function [pl][
 		xa: copy [] ya: copy []
 		foreach [x y] pl/2 [append xa x append ya y]
 		coef: regression xa ya
 		f: make-poly coef/1 coef/2 coef/3
+		d: collect [foreach [x y] pl/2 [keep compose [(x) (f x)]]]
+		compose/deep [
+			[line (rejoin [pl/1/2 " (regression)"]) (pl/1/7) none (pl/1/8)]
+			[(d)]
+		]
+	]
+	
+	normal-fitting: function [pl][
+		xa: copy [] ya: copy []
+		foreach [x y] pl/2 [append xa x append ya y]
+		coef: normal-fit xa ya
+		f: make-normal coef/1 coef/2 coef/3
 		d: collect [foreach [x y] pl/2 [keep compose [(x) (f x)]]]
 		compose/deep [
 			[line (rejoin [pl/1/2 " (regression)"]) (pl/1/7) none (pl/1/8)]
@@ -309,6 +338,7 @@ PLOTTER: make object! [
 		while [not tail? data] [
 			d: data/1
 			if d/1/6 = 'fit [insert/only next data fitting d]
+			if d/1/6 = 'normal-fit [insert/only next data normal-fitting d]
 			data: next data
 		]
 		data: head data
